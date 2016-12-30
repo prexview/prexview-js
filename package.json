@@ -1,0 +1,18 @@
+{
+  "name": "prexview",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "PrexView",
+  "license": "ISC",
+  "dependencies": {
+    "superagent": "^3.3.1"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "mocha": "^1.21.3"
+  }
+}
