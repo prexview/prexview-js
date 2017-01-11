@@ -85,7 +85,7 @@ const checkOptions = (format, options)=> {
   if(options.note && typeof options.note !== 'string') 
     return 'PrexView property "note" must be a string'
 
-  if(options.note && options.note.lenght > 500) 
+  if(options.note && options.note.length > 500) 
     options.note = options.note.slice(0, 500) 
 
   return options
