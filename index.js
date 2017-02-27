@@ -1,8 +1,7 @@
 const Request = require('superagent')
 
 let token = process.env.PXV_API_KEY || ''
-//const url = 'https://api.prexview.com/v1/'
-const url = 'http://localhost:4000/v1/'
+const url = 'https://api.prexview.com/v1/'
 
 const send = (options, cb)=>{
   Request
