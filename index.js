@@ -24,7 +24,7 @@ const send = (options, cb)=>{
       let result = {
         rateLimit: headers['x-ratelimit-limit'],
         rateLimitReset: headers['x-ratelimit-reset'],
-        rateLimit: headers['x-ratelimit-limit']
+        rateRemaining: headers['x-ratelimit-remaining']
       }
       if(res.status === 200){
         result.file = res.body

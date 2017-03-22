@@ -1,4 +1,4 @@
-# ![PrexView](https://cdn.prexview.com/media/extension/promo.png)
+# ![PrexView](https://prexview.com/media/extension/promo.png)
 
 [![Status](https://travis-ci.org/prexview/prexview-js.svg?branch=master)](https://travis-ci.org/prexview/prexview-js) [![npm version](https://badge.fury.io/js/prexview.svg)](https://npmjs.org/package/prexview "View this project on npm")
 
@@ -51,7 +51,7 @@ pxv.sendXML(xml, options, (err, res)=>{
 
 ###### Sending JSON
 
-You can pass the json param as a valid json string or as a  javascript object
+You can pass the json param as a valid json string or as a javascript object
 
 ```js
 const pxv = require('prexview')
@@ -90,33 +90,81 @@ Send data as a XML string
 
 Send data as a JSON string, it can also be can be a valid JSON string or a javascript object
 
-#### options
+#### Options
 
-##### design
+<div class="clear">&nbsp;</div>
 
-Type: `string` 
-Required: Yes
+##### -\-format
 
-Name of the design to use.
+###### Type: `string` **Required: Yes**
 
-##### output
+Data to use for the document creation, must be xml or json.
 
-Type: `string` 
-Required: Yes
+<div class="clear">&nbsp;</div>
 
-The format we want to receive from the service, it can be **html**, **pdf**, **png** or **jpg**
+##### -\-design
 
-##### designBackup
+###### Type: `string` **Required: Yes**
 
-Type: `string`
+Design's name to use.
 
-Name of another design to use if the option **design** is not available in the service
+You can use json sintax here to access data and have dynamic design names
+```json
+{
+  "Data": {
+    "customer": "123"
+  }
+}
+```
+Design name can use any data attribute or text node
+```
+invoice-customer-{{Data.customer}}
+```
+We will translate that to the following
+```
+invoice-customer-123
+```
 
-##### note
+And finally the service will try to find the design **invoice-customer-123** in order to transform the data and generate the document.
+  
+##### -\-output
 
-Type: `string`
+###### Type: `string` **Required: Yes**
 
-A custom note to add any string limit to 500 chars. It's usefull if you want to add meta data like a document, transaction or customer id.
+Document response type from the service, it can be **html**, **pdf**, **png** or **jpg**.
+
+##### -\-design-backup
+
+###### Type: `string`
+
+Design's name to use to be used if the option **design** is not available in the service.
+
+##### -\-note
+
+###### Type: `string`
+
+Custom note that can be used to add any information, it's limit up to 500 chars. This is useful if you want to add metadata such as document, transaction or customer ID.
+
+You can use json syntax to access data and get dynamic notes. 
+  
+```json
+{
+  "Data": {
+    "customer": "123"
+  }
+}
+```
+Notes can use any data attribute or text
+```
+Document: Invoice
+Customer: {{Data.customer}}
+```
+We will translate that to the following
+```
+Document: Invoice
+Customer: 123
+```
+
 
 ## License
 
