@@ -1,8 +1,10 @@
+# PrexView
+
+PrexView a fast, scalable and very friendly service for programatic HTML, PDF, PNG or JPG generation using JSON or XML data.
+
 # ![PrexView](https://prexview.com/media/extension/promo.png)
 
 [![Status](https://travis-ci.org/prexview/prexview-js.svg?branch=master)](https://travis-ci.org/prexview/prexview-js) [![npm version](https://badge.fury.io/js/prexview.svg)](https://npmjs.org/package/prexview "View this project on npm")
-
-A node.js module to use PrexView a fast, scalable and very friendly service for programatic HTML, PDF, PNG or JPG generation using JSON or XML data.
 
 *See [PrexView](https://prexview.com) for more information about the service.*
 
