@@ -23,7 +23,7 @@ $ npm install --save prexview
 export PXV_API_KEY="API_KEY"
 ```
 
-You can sign up in [PrexView](https://prexview.com/join) in order to get an API Key.
+You can get an API Key by downloading PrexView Studio from [PrexView](https://prexview.com).
 
 ###### Sending XML
 
