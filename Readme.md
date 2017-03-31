@@ -65,11 +65,11 @@ const options = {
 }
 
 const json = `{
-  "languages": {
-    "en": "English",
-    "es": "Español",
-    "fr": "Française"
-  }
+  "languages": [
+		{"code": "en", "name": "English"},
+		{"code": "es", "name": "Español"},
+		{"code": "fr", "name": "Française"}
+  ]
 }`
 
 pxv.sendJSON(json, options, (err, res)=>{
