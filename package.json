@@ -1,13 +1,37 @@
 {
   "name": "prexview",
-  "version": "0.1.1",
-  "description": "",
+  "version": "1.0.0",
+  "description": "A JavaScript module to use PrexView, a fast, scalable and friendly service for programatic HTML, PDF, PNG or JPG generation using JSON or XML data.",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prexview/prexview-js.git"
+  },
+  "keywords": [
+    "xml",
+    "json",
+    "converter",
+    "convert",
+    "transform",
+    "image",
+    "xml-parser",
+    "json-parser",
+    "document-conversion",
+    "xml-to-pdf",
+    "xml-to-png",
+    "xml-to-jpg",
+    "xml-to-html",
+    "json-to-pdf",
+    "json-to-png",
+    "json-to-jpg",
+    "json-to-html",
+    "prexview"
+  ],
   "author": "PrexView",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "superagent": "^3.3.1"
   },

@@ -69,28 +69,28 @@ const checkOptions = (format, options)=> {
     }
   }
 
-  if(typeof options.design !== 'string') 
+  if(typeof options.design !== 'string')
     return 'PrexView property "design" must be passed as a string option'
-  
-  if(typeof options.output !== 'string') 
+
+  if(typeof options.output !== 'string')
     return 'PrexView property "output" must be passed as a string option'
 
-  if(['html','pdf','png','jpg'].indexOf(options.output) === -1) 
+  if(['html','pdf','png','jpg'].indexOf(options.output) === -1)
     return 'PrexView property "output" must be one of these options: html, pdf, png or jpg'
 
-  if(options.designBackup && typeof options.designBackup !== 'string') 
+  if(options.designBackup && typeof options.designBackup !== 'string')
     return 'PrexView property "designBackup" must be a string'
 
-  if(options.note && typeof options.note !== 'string') 
+  if(options.note && typeof options.note !== 'string')
     return 'PrexView property "note" must be a string'
 
-  if(options.note && options.note.length > 500) 
-    options.note = options.note.slice(0, 500) 
+  if(options.note && options.note.length > 500)
+    options.note = options.note.slice(0, 500)
 
   return options
 }
 
-class pxv {  
+class pxv {
   static sendXML(content, options, cb){
     checkToken()
     options.xml = content
@@ -106,7 +106,7 @@ class pxv {
     checkToken()
     options.json = content
     const result = checkOptions('json', options)
-  
+
     if(typeof result === 'string')
       cb(new Error(result))
     else
