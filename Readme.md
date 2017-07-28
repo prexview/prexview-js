@@ -108,7 +108,7 @@ const json = {
 
 const file = 'test.pdf'
 
-pxv.sendXML(xml, options)
+pxv.sendJSON(json, options)
   .then((res) => {
     fs.writeFileSync(file, res.file)
 
