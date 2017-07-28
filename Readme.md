@@ -1,38 +1,58 @@
-# PrexView
-
-PrexView a fast, scalable and very friendly service for programatic HTML, PDF, PNG or JPG generation using JSON or XML data.
-
 # ![PrexView](https://prexview.com/media/extension/promo.png)
 
 [![Status](https://travis-ci.org/prexview/prexview-js.svg?branch=master)](https://travis-ci.org/prexview/prexview-js) [![npm version](https://badge.fury.io/js/prexview.svg)](https://npmjs.org/package/prexview "View this project on npm")
 
-*See [PrexView](https://prexview.com) for more information about the service.*
+A JavaScript module to use [PrexView][1], a fast, scalable and friendly service for programatic HTML, PDF, PNG or JPG generation using JSON or XML data.
+
+*See [PrexView][1] for more information about the service.*
 
 
-## Install
-
-```
-$ npm install --save prexview
-```
-
-## Usage
-
-###### Set up the PXV_API_KEY as an environment variable
+## Installation
 
 ```
-export PXV_API_KEY="API_KEY"
+npm install --save prexview
 ```
 
-You can get an API Key by downloading PrexView Studio from [PrexView](https://prexview.com).
+## Getting started
 
-###### Sending XML
+#### Get your API Key
+
+You can get an API Key from [PrexView][1]
+
+#### Set up your API Key
+
+If you can setup enviroment variables
+
+```
+export PXV_API_KEY="YOUR_API_KEY"
+```
+
+If you can't setup environment variables, create the PrexView object with your API Key as argument
 
 ```js
-const pxv = require('prexview')
+pxv = new PrexView('YOUR_API_KEY');
+```
+
+#### Include the library
+
+```js
+const PrexView = require('prexview')
+```
+
+#### Sending an XML
+
+To send an XML string use ```pxv.sendXML(xml, options)``` method, this method will return a [Promise][4] with the [Response object][3] on success or an error if something is wrong.
+
+##### Example
+
+```js
 const fs = require('fs')
+const PrexView = require('prexview')
+
+const pxv = new Prexview();
 
 const options = {
-  design: 'custom-invoice',
+  template: 'supported_languages',
   output: 'pdf'
 }
 
@@ -41,76 +61,88 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
   <lang code="en">English</lang>
   <lang code="es">Español</lang>
   <lang code="fr">Française</lang>
-</languages>`
+</languages>`;
 
-pxv.sendXML(xml, options, (err, res)=>{
-  if(err) return console.log(err)
-  fs.writeFile('file.pdf', res.file, (err)=>{
-    console.log(`Completed with id ${res.id}`)
+const file = 'test.pdf'
+
+pxv.sendXML(xml, options)
+  .then((res) => {
+    fs.writeFileSync(file, res.file)
+
+    console.log(`File created: ${file}`)
+  }).catch((err) => {
+    console.log(e.message)
   })
-})
 ```
 
-###### Sending JSON
+#### Sending a JSON
 
-You can pass the json param as a valid json string or as a javascript object
+To send a JSON string or JavaScript object use ```pxv.sendJSON(json, options)``` method, this method will return a [Promise][4] with the [Response object][3] on success or an error if something is wrong.
+
+##### Example
 
 ```js
-const pxv = require('prexview')
 const fs = require('fs')
+const PrexView = require('prexview')
+
+const pxv = new Prexview();
 
 const options = {
-  design: 'custom-invoice',
+  template: 'supported_languages',
   output: 'pdf'
 }
 
-const json = `{
-  "languages": [
-    {"code": "en", "name": "English"},
-    {"code": "es", "name": "Español"},
-    {"code": "fr", "name": "Française"}
-  ]
-}`
+// this can also be a valid string.
+const json = {
+  languages: [{
+    code: 'en',
+    name: 'Inglés'
+  }, {
+    code: 'es',
+    name: 'Spanish'
+  }, {
+    code: 'fr',
+    name: 'Française'
+  }]
+}
 
-pxv.sendJSON(json, options, (err, res)=>{
-  if(err) return console.log(err)
-  fs.writeFile('file.pdf', res.file, (err)=>{
-    console.log(`Completed with id ${res.id}`)
+const file = 'test.pdf'
+
+pxv.sendXML(xml, options)
+  .then((res) => {
+    fs.writeFileSync(file, res.file)
+
+    console.log(`File created: ${file}`)
+  }).catch((err) => {
+    console.log(e.message)
   })
-})
 ```
 
+##### Response object
 
+|Property|Type|Description|
+|--------|:--:|-----------|
+|id|`string`|Transaction ID.|
+|file|`binary`|Document created by the service.|
+|responseTime|`int`|Response time from service.|
+|rateLimit|`int`|Maximum number of calls to the service.|
+|rateLimitReset|`int`|Seconds to reset the rate limit.|
+|rateRemaining|`int`|Number of remaining call to the service.|
 
-## API
+##### Options
 
-### sendXML(xml, options, callback)
+|Name|Type|Required|Description|
+|----|:--:|:------:|-----------|
+|template|`string`|Yes|Template's name to be used to document creation, you can use [dynamic values][2].|
+|output|`string`|Yes|Type of document that will be created by PrexView service, it must be **html**, **pdf**, **png** or **jpg**.|
+|note|`string`|No|Custom information to be added to the document's metadata, it's limit up to 500 characters and you can use [dynamic values][2].|
+|format|`string`|No|Type of data used to the document creation, it must be **xml** or **json**, this should be inferred from library methods.|
+|templateBackup|`string`|No|Template's name to use to be used if the option **template** is not available in the service.|
 
-Send data as a XML string
+##### Dynamic values
 
-### sendJSON(json, options, callback)
+In **template** or **note** options you can use JSON sintax to access data and have dynamic values, for instance having the following JSON data:
 
-Send data as a JSON string, it can also be can be a valid JSON string or a javascript object
-
-#### Options
-
-<div class="clear">&nbsp;</div>
-
-##### -\-format
-
-###### Type: `string` **Required: Yes**
-
-Data to use for the document creation, must be xml or json.
-
-<div class="clear">&nbsp;</div>
-
-##### -\-design
-
-###### Type: `string` **Required: Yes**
-
-Design's name to use.
-
-You can use json sintax here to access data and have dynamic design names
 ```json
 {
   "Data": {
@@ -118,56 +150,26 @@ You can use json sintax here to access data and have dynamic design names
   }
 }
 ```
-Design name can use any data attribute or text node
+
+Your **template** or **note** can use any data attribute or text node, for instance:
+
 ```
-invoice-customer-{{Data.customer}}
-```
-We will translate that to the following
-```
-invoice-customer-123
+'invoice-customer-{{Data.customer}}'
 ```
 
-And finally the service will try to find the design **invoice-customer-123** in order to transform the data and generate the document.
-  
-##### -\-output
+Then we will translate that to the following:
 
-###### Type: `string` **Required: Yes**
-
-Document response type from the service, it can be **html**, **pdf**, **png** or **jpg**.
-
-##### -\-design-backup
-
-###### Type: `string`
-
-Design's name to use to be used if the option **design** is not available in the service.
-
-##### -\-note
-
-###### Type: `string`
-
-Custom note that can be used to add any information, it's limit up to 500 chars. This is useful if you want to add metadata such as document, transaction or customer ID.
-
-You can use json syntax to access data and get dynamic notes. 
-  
-```json
-{
-  "Data": {
-    "customer": "123"
-  }
-}
 ```
-Notes can use any data attribute or text
-```
-Document: Invoice
-Customer: {{Data.customer}}
-```
-We will translate that to the following
-```
-Document: Invoice
-Customer: 123
+'invoice-customer-123'
 ```
 
+And finally the service will try to find the **template** or **note** ```invoice-customer-123``` in order to transform the data and generate the document.
 
 ## License
 
-MIT © [PrexView](https://prexview.com)
+MIT © [PrexView][1]
+
+[1]: https://prexview.com
+[2]: #dynamic-values
+[3]: #response-object
+[4]: https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise

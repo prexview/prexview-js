@@ -1,6 +1,6 @@
 {
   "name": "prexview",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A JavaScript module to use PrexView, a fast, scalable and friendly service for programatic HTML, PDF, PNG or JPG generation using JSON or XML data.",
   "main": "index.js",
   "scripts": {
@@ -28,6 +28,14 @@
     "json-to-png",
     "json-to-jpg",
     "json-to-html",
+    "html-to-pdf",
+    "html-to-png",
+    "html-to-jpg",
+    "pdf",
+    "html",
+    "png",
+    "jpg",
+    "renderer",
     "prexview"
   ],
   "author": "PrexView",

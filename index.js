@@ -1,117 +1,153 @@
 const Request = require('superagent')
 
+const URL = 'https://api.prexview.com/v1/'
 let token = process.env.PXV_API_KEY || ''
-const url = 'https://api.prexview.com/v1/'
 
-const send = (options, cb)=>{
-  Request
-    .post(url + 'transform')
+const send = (options) => {
+  return Request
+    .post(URL + 'transform')
     .set('Authorization', token)
     .buffer(true)
-      .parse((res, fn)=>{
-        let data = []
-        res.on('data', function(chunk){
-          data.push(chunk)
-        })
-        res.on('end', function () {
-          fn(null, Buffer.concat(data))
-        })
+    .parse((res, fn) => {
+      let data = []
+
+      res.on('data', (chunk) => {
+        data.push(chunk)
       })
+
+      res.on('end', () => {
+        fn(null, Buffer.concat(data))
+      })
+    })
     .send(options)
-    .end((err, res)=>{
-      if(err) return cb(err)
-      const headers = res.headers
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error('PrexView could not create document, response status: ' . res.status_code)
+      }
+
       let result = {
-        rateLimit: headers['x-ratelimit-limit'],
-        rateLimitReset: headers['x-ratelimit-reset'],
-        rateRemaining: headers['x-ratelimit-remaining']
+        rateLimit: res.headers['x-ratelimit-limit'],
+        rateLimitReset: res.headers['x-ratelimit-reset'],
+        rateRemaining: res.headers['x-ratelimit-remaining']
       }
+
       if(res.status === 200){
+        result.id = res.headers['x-transaction-id']
         result.file = res.body
-        result.responseTime = headers['x-response-time']
-        result.id = headers['x-transaction-id']
+        result.responseTime = res.headers['x-response-time']
       }
-      cb(null, result)
+
+      return result
+    })
+    .catch((err) => {
+      throw new Error('PrexView could not create document, response status: ' + err.status)
     })
 }
 
-const checkToken = ()=> {
-  if(token === '')
-    throw new Error("PrexView environment variable PXV_API_KEY must be set")
-}
-
-const isJson = (str)=> {
+const isJson = (str) => {
   try {
     JSON.parse(str)
-  } catch (e) {
+  } catch(e) {
     return false
   }
+
   return true
 }
 
-const checkOptions = (format, options)=> {
-
+const checkOptions = (format, options) => {
   // JSON
-  if(format === 'json'){
-    if(typeof options.json === 'string'){
-      if(!isJson(options.json)){
-        return 'PrexView content must be a valid JSON string'
+  if (format === 'json') {
+    if (typeof options.json === 'string') {
+      if (!isJson(options.json)) {
+        throw new Error('PrexView content must be a valid JSON string')
       }
     } else {
-      if(options.json === null || typeof options.json !== 'object'){
-        return 'PrexView content must be a javascript object or a valid JSON string'
+      if (options.json === null || typeof options.json !== 'object') {
+        throw new Error('PrexView content must be a javascript object or a valid JSON string')
+      } else {
+        options.json = JSON.stringify(options.json)
       }
     }
   // XML
   } else {
-    if(typeof options.xml !== 'string'){
-      return 'PrexView content must be a valid XML string'
+    if (typeof options.xml !== 'string') {
+      throw new Error('PrexView content must be a valid XML string')
     }
   }
 
-  if(typeof options.design !== 'string')
-    return 'PrexView property "design" must be passed as a string option'
+  // TODO: design option is deprecated, this should be removed
+  if (options.design) {
+    console.info('PrexView property "design" is deprecated, please use "template" property.')
+    options.template = options.design
 
-  if(typeof options.output !== 'string')
-    return 'PrexView property "output" must be passed as a string option'
+    delete options.design
+  }
 
-  if(['html','pdf','png','jpg'].indexOf(options.output) === -1)
-    return 'PrexView property "output" must be one of these options: html, pdf, png or jpg'
+  if (typeof options.template !== 'string')
+    throw new Error('PrexView property "template" must be passed as a string option')
 
-  if(options.designBackup && typeof options.designBackup !== 'string')
-    return 'PrexView property "designBackup" must be a string'
+  if (typeof options.output !== 'string')
+    throw new Error('PrexView property "output" must be passed as a string option')
 
-  if(options.note && typeof options.note !== 'string')
-    return 'PrexView property "note" must be a string'
+  if (['html','pdf','png','jpg'].indexOf(options.output) === -1)
+    throw new Error('PrexView property "output" must be one of these options: html, pdf, png or jpg')
 
-  if(options.note && options.note.length > 500)
+  // TODO: designBackup option is deprecated, this should be removed
+  if (options.designBackup) {
+    console.info('PrexView property "designBackup" is deprecated, please use "templateBackup" property.')
+    options.templateBackup = options.designBackup
+    delete options.designBackup
+  }
+
+  if (options.templateBackup && typeof options.templateBackup !== 'string')
+    throw new Error('PrexView property "templateBackup" must be a string')
+
+  if (options.note && typeof options.note !== 'string')
+    throw new Error('PrexView property "note" must be a string')
+
+  if (options.note && options.note.length > 500)
     options.note = options.note.slice(0, 500)
 
   return options
 }
 
-class pxv {
-  static sendXML(content, options, cb){
-    checkToken()
-    options.xml = content
-    const result = checkOptions('xml', options)
+const checkToken = () => {
+  if(token === '') throw new Error('PrexView environment variable PXV_API_KEY must be set')
+}
 
-    if(typeof result === 'string')
-      cb(new Error(result))
-    else
-      send(result, cb)
+class PrexView {
+
+  constructor(api_key = null) {
+    if (api_key) token = api_key
   }
 
-  static sendJSON(content, options, cb){
-    checkToken()
-    options.json = content
-    const result = checkOptions('json', options)
+  sendXML(content, options) {
+    return new Promise((resolve, reject) => {
+      checkToken()
 
-    if(typeof result === 'string')
-      cb(new Error(result))
-    else
-      send(result, cb)
+      options.xml = content
+
+      const result = checkOptions('xml', options)
+
+      send(result)
+        .then(resolve)
+        .catch(reject)
+    })
+  }
+
+  sendJSON(content, options) {
+    return new Promise((resolve, reject) => {
+      checkToken()
+
+      options.json = content
+
+      const result = checkOptions('json', options)
+
+      send(result)
+        .then(resolve)
+        .catch(reject)
+    })
   }
 }
 
-module.exports = pxv
+module.exports = PrexView
